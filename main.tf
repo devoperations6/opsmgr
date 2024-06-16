@@ -23,3 +23,21 @@ resource "aws_subnet" "ohiosubnet" {
     Name = ohiosubnet
   }
 }
+# Data source to fetch the AMI ID
+data "aws_ami" "amazon_linux_2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+resource "aws_instance" "webserver" {
+  ami = "data.aws_ami.amazon_linux_2.id"
+  instance_type = "t2.micro"
+  tags = {
+    Name = "webserver"
+  }
+   
+  }
+  
+}
