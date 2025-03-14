@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'devoperatio6/myapp1'
+        DOCKER_IMAGE = 'devoperatio6/app1'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout the code from GitHub
-                git 'https://github.com/devoperations6/opsmgr.git'
+                git 'https://github.com/devoperations6/opsmgr'
             }
         }
 
