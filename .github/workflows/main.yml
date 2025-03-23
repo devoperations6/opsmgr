@@ -52,7 +52,7 @@ jobs:
           SSH_KEY: ${{ secrets.MASTER_LINUX }}
         run: |
           echo "$SSH_KEY" > id_ed25519
-          chmod 600 id_ed25519.
+          chmod 600 id_ed25519
           ssh -o StrictHostKeyChecking=no -i id_ed25519 root@192.168.0.168
             docker pull ${{ secrets.DOC_USER }}/your-image-name:${{ github.sha }}
             docker stop your-container-name || true
