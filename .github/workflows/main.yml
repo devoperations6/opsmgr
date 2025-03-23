@@ -1,0 +1,62 @@
+name: Build, Push Docker Image and Deploy to Local Linux Instance
+
+on:
+  push:
+    branches:
+      - main  # or any branch you want to trigger the action on
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/your-image-name:${{ github.sha }} .
+        
+      # Push the Docker image to Docker Hub
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/your-image-name:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Ensures this job runs after the 'build' job
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Deploy to the Linux instance (you will need to configure SSH access to your Linux server)
+      - name: Deploy Docker Image to Linux Instance
+        env:
+          HOST: ${{ secrets.LINUX_HOST }}
+          USER: ${{ secrets.LINUX_USER }}
+          SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
+            docker pull ${{ secrets.DOCKER_USERNAME }}/your-image-name:${{ github.sha }}
+            docker stop your-container-name || true
+            docker rm your-container-name || true
+            docker run -d --name your-container-name -p 80:80 ${{ secrets.DOCKER_USERNAME }}/your-image-name:${{ github.sha }}
+          EOF
+          rm private_key.pem
