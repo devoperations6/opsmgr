@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.DOC_USER }}/python_image:${{ github.sha }} .
-        
+
       # Push the Docker image to Docker Hub
       - name: Push Docker Image to Docker Hub
         run: |
@@ -44,7 +44,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Deploy to the Linux instance (you will need to configure SSH access to your Linux servers)
+      # Debug: Check the secrets values
+      - name: Debug SSH Details
+        run: |
+          echo "HOST: ${{ secrets.HOST_LINUX }}"
+          echo "USER: ${{ secrets.LINUX_USER }}"
+          echo "PORT: ${{ secrets.HOST_PORT }}"
+
+      # Deploy to the Linux instance (you will need to configure SSH access to your Linux server)
+      - name: Deploy Docker Image to Linux Instance
+        env:
+          HOST: ${{ secrets.HOST_LINUX }}
+          USER: ${{ secrets.LINUX_USER }}
+          SSH_KEY: ${{ secrets.MASTER_LINUX }}
+          ssh_port: ${{ secrets.HOST_PORT }}
+        run: |
+          echo "$SSH_KEY" > id_ed25519
+          chmod 600 id_ed25519
+          # Test SSH connection (optional)
+          ssh -o StrictHostKeyChecking=no -i id_ed25519 -p ${{ secrets.HOST_PORT }} $USER@$HOST 'hostname'
+
+      # Deploy to the Linux instance (you will need to configure SSH access to your Linux server)
       - name: Deploy Docker Image to Linux Instance
         env:
           HOST: ${{ secrets.HOST_LINUX }}
