@@ -51,12 +51,12 @@ jobs:
           USER: ${{ secrets.LINUX_USER }}
           SSH_KEY: ${{ secrets.MASTER_LINUX }}
         run: |
-          echo "$SSH_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
+          echo "$SSH_KEY" > id_ed25519.pem
+          chmod 600 id_ed25519.pem
+          ssh -o StrictHostKeyChecking=no -i id_ed25519.pem $USER@$HOST <<EOF
             docker pull ${{ secrets.DOC_USER }}/your-image-name:${{ github.sha }}
             docker stop your-container-name || true
             docker rm your-container-name || true
             docker run -d --name your-container-name -p 80:80 ${{ secrets.DOC_USER }}/your-image-name:${{ github.sha }}
           EOF
-          rm private_key.pem
+          rm id_ed25519.pem
