@@ -74,8 +74,8 @@ jobs:
         run: |
           echo "$SSH_KEY" > id_ed25519
           chmod 600 id_ed25519
-          # ssh -o StrictHostKeyChecking=no -i id_ed25519 root@192.168.0.168
-          ssh -o StrictHostKeyChecking=no -i id_ed25519 -p ${{ secrets.HOST_PORT }} $USER@$HOST <<EOF
+          ssh -o StrictHostKeyChecking=no -i id_ed25519 -p 22 root@192.168.0.168
+          # ssh -o StrictHostKeyChecking=no -i id_ed25519 -p ${{ secrets.HOST_PORT }} $USER@$HOST <<EOF
             docker pull ${{ secrets.DOC_USER }}/your-image-name:${{ github.sha }}
             docker stop your-container-name || true
             docker rm your-container-name || true
