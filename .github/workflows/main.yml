@@ -44,7 +44,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Deploy to the Linux instance (you will need to configure SSH access to your Linux server)
+      # Deploy to the Linux instance (you will need to configure SSH access to your Linux servers)
       - name: Deploy Docker Image to Linux Instance
         env:
           HOST: ${{ secrets.HOST_LINUX }}
