@@ -50,6 +50,7 @@ jobs:
           HOST: ${{ secrets.HOST_LINUX }}
           USER: ${{ secrets.LINUX_USER }}
           SSH_KEY: ${{ secrets.MASTER_LINUX }}
+          ssh_port: ${{ secrets.HOST_PORT }}
         run: |
           echo "$SSH_KEY" > id_ed25519
           chmod 600 id_ed25519
